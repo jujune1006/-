@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>東京・北陸・河口湖 跨年行程</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;600;700;800&family=Noto+Sans+TC:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1c2a4a;
+    --ink-deep:#0f172e;
+    --paper:#f8f4ea;
+    --paper-dim:#efe6d2;
+    --vermillion:#b23a2e;
+    --vermillion-deep:#8f2b21;
+    --gold:#c8a233;
+    --text:#23262b;
+    --text-soft:#666a5c;
+    --text-soft2:#7a7d6f;
+    --snow:#ffffff;
+    --line:#dcd4bd;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:'Noto Sans TC', sans-serif;
+    background:var(--paper);
+    color:var(--text);
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    overflow-x:hidden;
+  }
+  .brand{font-family:'Shippori Mincho', serif;}
+
+  .hero{
+    position:relative;
+    background:linear-gradient(180deg,var(--ink-deep) 0%, var(--ink) 55%, #2c3f66 100%);
+    color:var(--snow);
+    padding:30px 20px 42px;
+    overflow:hidden;
+  }
+  .hero canvas{position:absolute; inset:0; width:100%; height:100%; opacity:.8;}
+  .hero-content{position:relative; z-index:2;}
+  .eyebrow{font-size:11px; letter-spacing:.28em; text-transform:uppercase; color:var(--gold); font-weight:600; opacity:.9;}
+  .hero h1{font-family:'Shippori Mincho', serif; font-size:24px; line-height:1.5; margin:8px 0 6px; font-weight:700; letter-spacing:.02em;}
+  .hero .dates{font-size:12.5px; color:#cdd6e8; letter-spacing:.03em;}
+  .fuji{position:absolute; bottom:-2px; left:0; width:100%; z-index:1; opacity:.9;}
+  .torii-mark{position:absolute; top:20px; right:20px; width:36px; height:36px; opacity:.85; z-index:2;}
+  .stat-row{display:flex; gap:8px; margin-top:16px; position:relative; z-index:2; flex-wrap:wrap;}
+  .stat-pill{background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.18); border-radius:999px; padding:6px 12px; font-size:11px; color:#e8ecf6; letter-spacing:.02em;}
+
+  main{flex:1; padding:20px 16px 104px; max-width:560px; width:100%; margin:0 auto;}
+  .panel{display:none;}
+  .panel.active{display:block; animation:fadeUp .35s ease;}
+  @keyframes fadeUp{from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:translateY(0);}}
+
+  .section-title{font-family:'Shippori Mincho', serif; font-size:19px; font-weight:700; color:var(--ink); margin:6px 0 14px; display:flex; align-items:center; gap:10px;}
+  .section-title .bar{width:4px; height:18px; background:var(--vermillion); border-radius:2px; display:inline-block;}
+
+  .day-card{background:var(--snow); border:1px solid var(--line); border-radius:14px; margin-bottom:14px; overflow:hidden; box-shadow:0 1px 2px rgba(28,42,74,.04);}
+  .day-head{display:flex; align-items:center; gap:14px; padding:14px 16px; cursor:pointer; background:var(--paper-dim); border-bottom:1px solid transparent;}
+  .day-head.open{border-bottom-color:var(--line);}
+  .hanko{flex:0 0 auto; width:44px; height:44px; border-radius:50%; background:var(--vermillion); color:#fff; display:flex; align-items:center; justify-content:center; flex-direction:column; font-family:'Shippori Mincho', serif; font-weight:700; box-shadow:inset 0 0 0 2px rgba(255,255,255,.35); position:relative;}
+  .hanko .num{font-size:16px; line-height:1;}
+  .hanko .kanji{font-size:8px; line-height:1; margin-top:1px; letter-spacing:.05em;}
+  .day-head-text{flex:1; min-width:0;}
+  .day-head-text .date{font-size:11px; color:var(--text-soft2); letter-spacing:.03em;}
+  .day-head-text .title{font-family:'Shippori Mincho', serif; font-size:15.5px; font-weight:700; color:var(--ink); margin-top:2px;}
+  .chevron{width:18px; height:18px; color:var(--text-soft2); transition:transform .25s ease; flex:0 0 auto;}
+  .day-head.open .chevron{transform:rotate(180deg);}
+  .day-body{max-height:0; overflow:hidden; transition:max-height .35s ease;}
+  .day-body-inner{padding:14px 16px 18px;}
+  .timeline{list-style:none; margin:0; padding:0;}
+  .t-item{display:grid; grid-template-columns:52px 1fr; gap:10px; padding:10px 0; border-bottom:1px dashed var(--line);}
+  .t-item:last-child{border-bottom:none;}
+  .t-time{font-size:12.5px; font-weight:700; color:var(--vermillion); padding-top:1px;}
+  .t-main .t-name{font-size:14px; font-weight:600; color:var(--text); line-height:1.5;}
+  .t-main .t-note{font-size:12.5px; color:var(--text-soft); margin-top:3px; line-height:1.55;}
+  .map-btn{display:inline-flex; align-items:center; gap:4px; margin-top:6px; font-size:11.5px; font-weight:600; color:var(--vermillion-deep); background:#fbeceb; border:1px solid #f0d4d1; padding:4px 9px; border-radius:8px; text-decoration:none;}
+  .map-btn svg{width:11px; height:11px;}
+  .day-tags{display:flex; gap:6px; flex-wrap:wrap; margin:2px 0 12px;}
+  .tag{font-size:11px; background:#eef0e4; color:var(--text-soft); padding:3px 9px; border-radius:999px;}
+  .tag.warn{background:#fdf0e2; color:#9a5b0c;}
+  .callout{background:#fdf6e3; border:1px solid #ecdca8; border-radius:10px; padding:10px 12px; font-size:12.5px; color:#6b551d; line-height:1.6; margin-top:10px;}
+  .day-budget{display:flex; justify-content:space-between; align-items:center; margin-top:12px; padding-top:10px; border-top:1px solid var(--line); font-size:12.5px; color:var(--text-soft);}
+  .day-budget b{color:var(--ink); font-size:13px;}
+
+  .stay-card{background:#fff; border:1px solid var(--line); border-radius:12px; padding:14px; margin-bottom:12px; display:flex; gap:12px;}
+  .stay-emblem{width:40px; height:40px; border-radius:10px; flex:0 0 auto; background:var(--ink); color:var(--gold); display:flex; align-items:center; justify-content:center; font-family:'Shippori Mincho', serif; font-weight:700; font-size:13px;}
+  .stay-text .area{font-family:'Shippori Mincho', serif; font-weight:700; color:var(--ink); font-size:14.5px;}
+  .stay-text .nights{font-size:12px; color:var(--vermillion-deep); margin-top:2px; font-weight:600;}
+  .stay-text .note{font-size:12.5px; color:var(--text-soft); margin-top:4px; line-height:1.55;}
+
+  .add-row{display:flex; gap:8px; margin-bottom:14px;}
+  .add-row input{flex:1; border:1px solid var(--line); border-radius:10px; padding:10px 12px; font-size:13.5px; font-family:'Noto Sans TC', sans-serif; background:#fff; color:var(--text);}
+  .add-row input:focus{outline:none; border-color:var(--vermillion);}
+  .add-btn{flex:0 0 auto; width:42px; border:none; border-radius:10px; background:var(--vermillion); color:#fff; font-size:20px; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center;}
+  .pack-item{display:flex; align-items:center; gap:10px; padding:9px 2px; font-size:13.5px; color:var(--text); border-bottom:1px solid #f1ece0; user-select:none;}
+  .pack-item:last-child{border-bottom:none;}
+  .checkbox{width:19px; height:19px; border-radius:6px; border:1.6px solid var(--line); flex:0 0 auto; display:flex; align-items:center; justify-content:center; transition:all .15s ease; cursor:pointer;}
+  .checkbox svg{width:12px; height:12px; opacity:0; transition:opacity .15s ease;}
+  .pack-item.checked .checkbox{background:var(--vermillion); border-color:var(--vermillion);}
+  .pack-item.checked .checkbox svg{opacity:1;}
+  .pack-item.checked span.label{color:var(--text-soft2); text-decoration:line-through;}
+  .pack-item .label{flex:1; cursor:pointer; line-height:1.5;}
+  .del-btn{flex:0 0 auto; width:24px; height:24px; border:none; background:none; color:var(--text-soft2); cursor:pointer; display:flex; align-items:center; justify-content:center; border-radius:6px;}
+  .del-btn:active{background:#f1ece0;}
+  .del-btn svg{width:16px; height:16px;}
+  .pack-progress{font-size:12px; color:var(--text-soft); margin-bottom:14px; display:flex; justify-content:space-between; align-items:center;}
+  .progress-bar{flex:1; height:6px; background:var(--paper-dim); border-radius:999px; margin:0 10px; overflow:hidden;}
+  .progress-fill{height:100%; background:var(--vermillion); border-radius:999px; transition:width .3s ease;}
+  .empty-hint{font-size:12.5px; color:var(--text-soft2); text-align:center; padding:18px 0;}
+  .reset-note{font-size:11.5px; color:var(--text-soft2); text-align:center; margin-top:6px;}
+
+  .calc-card{background:#fff; border:1px solid var(--line); border-radius:16px; padding:20px; margin-bottom:14px;}
+  .calc-field{margin-bottom:14px;}
+  .calc-field label{font-size:12px; color:var(--text-soft); display:block; margin-bottom:6px; font-weight:600;}
+  .calc-input-wrap{display:flex; align-items:center; border:1.5px solid var(--line); border-radius:12px; overflow:hidden; background:#fdfbf6;}
+  .calc-input-wrap .unit{padding:0 14px; font-family:'Shippori Mincho', serif; font-weight:700; color:var(--ink); background:var(--paper-dim); align-self:stretch; display:flex; align-items:center; font-size:14px;}
+  .calc-input-wrap input{flex:1; border:none; background:none; padding:13px 12px; font-size:18px; font-weight:700; color:var(--ink); font-family:'Shippori Mincho', serif; width:0;}
+  .calc-input-wrap input:focus{outline:none;}
+  .swap-btn{display:flex; align-items:center; justify-content:center; gap:6px; margin:2px auto 14px; background:none; border:1px solid var(--line); border-radius:999px; padding:6px 14px; font-size:12px; color:var(--text-soft); cursor:pointer;}
+  .swap-btn svg{width:14px; height:14px;}
+  .rate-field{display:flex; align-items:center; justify-content:space-between; gap:10px; background:var(--paper-dim); border-radius:10px; padding:10px 12px; font-size:12.5px; color:var(--text-soft);}
+  .rate-field input{width:70px; text-align:right; border:1px solid var(--line); border-radius:8px; padding:5px 8px; font-size:13px; font-family:'Shippori Mincho', serif; font-weight:700; color:var(--ink);}
+  .quick-amounts{display:flex; gap:8px; flex-wrap:wrap; margin-top:14px;}
+  .quick-chip{background:var(--paper-dim); border:1px solid var(--line); border-radius:999px; padding:6px 12px; font-size:12px; color:var(--text); cursor:pointer;}
+
+  .doc-card{background:#fff; border:1px solid var(--line); border-radius:12px; padding:14px; margin-bottom:12px;}
+  .doc-head{display:flex; align-items:center; gap:10px; margin-bottom:8px;}
+  .doc-icon{width:34px; height:34px; border-radius:9px; background:var(--ink); color:var(--gold); display:flex; align-items:center; justify-content:center; flex:0 0 auto;}
+  .doc-icon svg{width:17px; height:17px;}
+  .doc-title{font-family:'Shippori Mincho', serif; font-weight:700; color:var(--ink); font-size:14.5px;}
+  .doc-row{display:flex; justify-content:space-between; font-size:12.5px; padding:5px 0; border-bottom:1px dashed var(--line); color:var(--text-soft);}
+  .doc-row:last-child{border-bottom:none;}
+  .doc-row b{color:var(--text);}
+  .doc-note{font-size:12px; color:#9a5b0c; background:#fdf3e4; border-radius:8px; padding:7px 10px; margin-top:8px; line-height:1.55;}
+  .doc-link{display:inline-flex; align-items:center; gap:4px; margin-top:8px; font-size:12px; font-weight:600; color:var(--vermillion-deep); text-decoration:none;}
+  .doc-textarea{width:100%; border:1px solid var(--line); border-radius:10px; padding:10px 12px; font-size:13px; font-family:'Noto Sans TC', sans-serif; color:var(--text); resize:vertical; min-height:70px; margin-top:6px; background:#fdfbf6;}
+  .doc-textarea:focus{outline:none; border-color:var(--vermillion);}
+
+  nav.bottom{position:fixed; left:0; right:0; bottom:0; z-index:50; background:rgba(248,244,234,.94); backdrop-filter:blur(10px); border-top:1px solid var(--line); display:flex; padding:5px 2px calc(5px + env(safe-area-inset-bottom));}
+  .nav-btn{flex:1; background:none; border:none; display:flex; flex-direction:column; align-items:center; gap:2px; padding:6px 1px; color:var(--text-soft2); font-family:'Noto Sans TC', sans-serif; font-size:9.5px; cursor:pointer;}
+  .nav-btn svg{width:19px; height:19px; stroke:currentColor;}
+  .nav-btn.active{color:var(--vermillion-deep);}
+  .nav-btn.active svg{stroke:var(--vermillion-deep);}
+
+  @media (min-width:600px){ .hero h1{font-size:28px;} }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <canvas id="snow"></canvas>
+  <svg class="torii-mark" viewBox="0 0 48 48" fill="none">
+    <path d="M6 14h36M6 18h36M12 18v26M36 18v26M9 8l30 0M14 8v6M34 8v6" stroke="#c8a233" stroke-width="2" stroke-linecap="round"/>
+  </svg>
+  <div class="hero-content">
+    <div class="eyebrow">Winter Journey</div>
+    <h1 class="brand">東京・北陸・河口湖<br>跨年九日</h1>
+    <div class="dates">2026.12.25 Fri — 2027.01.02 Sat ｜ 4人女子旅</div>
+    <div class="stat-row">
+      <div class="stat-pill">9天8夜</div>
+      <div class="stat-pill">全程大眾運輸</div>
+      <div class="stat-pill">預算 NT$60,000/人</div>
+    </div>
+  </div>
+  <svg class="fuji" viewBox="0 0 400 60" preserveAspectRatio="none">
+    <polygon points="0,60 120,18 155,30 190,6 230,30 260,20 400,60" fill="#f8f4ea"/>
+    <polygon points="175,15 190,6 205,15 198,18 190,14 182,18" fill="#c8a233" opacity=".55"/>
+  </svg>
+</header>
+
+<main>
+
+  <section id="panel-days" class="panel active">
+    <div class="section-title"><span class="bar"></span>每日行程</div>
+    <div id="days-list"></div>
+  </section>
+
+  <section id="panel-stay" class="panel">
+    <div class="section-title"><span class="bar"></span>住宿安排</div>
+    <div class="callout" style="margin-bottom:14px;">目前僅訂好機票，住宿尚未預訂 — 以下為建議下榻區域，供訂房參考。</div>
+    <div id="stay-list"></div>
+  </section>
+
+  <section id="panel-packing" class="panel">
+    <div class="section-title"><span class="bar"></span>行前準備 / 行李清單</div>
+    <div class="add-row">
+      <input type="text" id="packingInput" placeholder="新增行李項目…">
+      <button class="add-btn" id="packingAdd">＋</button>
+    </div>
+    <div class="pack-progress">
+      <span>已完成</span>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+      <span id="progressText">0/0</span>
+    </div>
+    <div id="packing-list"></div>
+  </section>
+
+  <section id="panel-shopping" class="panel">
+    <div class="section-title"><span class="bar"></span>必買清單</div>
+    <div class="add-row">
+      <input type="text" id="shoppingInput" placeholder="新增想買的東西…">
+      <button class="add-btn" id="shoppingAdd">＋</button>
+    </div>
+    <div class="pack-progress">
+      <span>已入手</span>
+      <div class="progress-bar"><div class="progress-fill" id="shopProgressFill" style="width:0%"></div></div>
+      <span id="shopProgressText">0/0</span>
+    </div>
+    <div id="shopping-list"></div>
+  </section>
+
+  <section id="panel-calc" class="panel">
+    <div class="section-title"><span class="bar"></span>日幣／台幣 換算機</div>
+    <div class="calc-card">
+      <div class="calc-field">
+        <label>日幣 JPY</label>
+        <div class="calc-input-wrap"><span class="unit">¥</span><input type="number" id="jpyInput" inputmode="decimal" placeholder="0"></div>
+      </div>
+      <button class="swap-btn" id="swapBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7 10l5-5 5 5M7 14l5 5 5-5"/></svg>
+        雙向即時換算
+      </button>
+      <div class="calc-field">
+        <label>新台幣 TWD</label>
+        <div class="calc-input-wrap"><span class="unit">NT$</span><input type="number" id="twdInput" inputmode="decimal" placeholder="0"></div>
+      </div>
+      <div class="rate-field"><span>目前匯率：1 JPY ≈ <input type="number" id="rateInput" value="0.205" step="0.001"> TWD</span></div>
+      <div class="quick-amounts" id="quickAmounts"></div>
+    </div>
+    <div class="callout">💡 匯率會隨時間波動，此為預估值，出發前請以實際換匯／刷卡匯率為準；上方匯率欄位可自行修改成當天最新匯率。</div>
+  </section>
+
+  <section id="panel-docs" class="panel">
+    <div class="section-title"><span class="bar"></span>重要文件與資訊</div>
+
+    <div class="doc-card">
+      <div class="doc-head">
+        <div class="doc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12l7-2 4-8 2 1-3 7 7-1 2 2-8 3-2 7-2-1 1-6-8 1z"/></svg></div>
+        <div class="doc-title">機票資訊</div>
+      </div>
+      <div class="doc-row"><span>去程</span><b>虎航 IT280｜12/25 高雄08:00→成田12:10</b></div>
+      <div class="doc-row"><span>回程</span><b>泰亞航 FD235｜1/2 成田13:30→高雄17:00</b></div>
+      <textarea class="doc-textarea" placeholder="訂位代號、電子機票號碼等可記在這裡…"></textarea>
+    </div>
+
+    <div class="doc-card">
+      <div class="doc-head">
+        <div class="doc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z"/></svg></div>
+        <div class="doc-title">海外旅遊保險</div>
+      </div>
+      <div class="doc-row"><span>狀態</span><b>尚未投保</b></div>
+      <div class="doc-note">建議出發前投保海外旅平險＋醫療險，滑雪行程請確認保單有涵蓋「運動傷害」項目。</div>
+      <textarea class="doc-textarea" placeholder="保單號碼、保險公司緊急聯絡電話等可記在這裡…"></textarea>
+    </div>
+
+    <div class="doc-card">
+      <div class="doc-head">
+        <div class="doc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 4v5M16 4v5"/><path d="M8 14l2.5 2.5L16 11"/></svg></div>
+        <div class="doc-title">Visit Japan Web</div>
+      </div>
+      <div class="doc-row"><span>用途</span><b>入境審查／海關申報線上化</b></div>
+      <div class="doc-note">建議出發前3-7天，每人各自在 Visit Japan Web 完成註冊、上傳護照與班機資訊，抵達成田時可走快速通關通道，記得截圖QR code備用。</div>
+      <a class="doc-link" href="https://services.digital.go.jp/en/visit-japan-web/" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 3h7v7M21 3l-9 9M5 5h6M5 5v14h14v-6"/></svg>
+        前往 Visit Japan Web 官網
+      </a>
+    </div>
+
+    <div class="doc-card">
+      <div class="doc-head">
+        <div class="doc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></div>
+        <div class="doc-title">瑰麗山海號車票</div>
+      </div>
+      <div class="doc-row"><span>日期</span><b>12/27（日）冰見線</b></div>
+      <div class="doc-note">全車指定席，需出發前1個月於JR西日本官網／綠色窗口預約，餐食需另3天前於VISIT富山県網站預約。</div>
+    </div>
+
+    <div class="doc-card">
+      <div class="doc-head">
+        <div class="doc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.5-7 8-7s8 3 8 7"/></svg></div>
+        <div class="doc-title">同行夥伴聯絡</div>
+      </div>
+      <textarea class="doc-textarea" placeholder="4人的護照號碼、緊急聯絡人、飯店訂單截圖存放位置等可記在這裡…"></textarea>
+    </div>
+
+  </section>
+
+</main>
+
+<nav class="bottom">
+  <button class="nav-btn active" data-panel="panel-days">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>
+    每日行程
+  </button>
+  <button class="nav-btn" data-panel="panel-stay">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-7a2 2 0 012-2h14a2 2 0 012 2v7"/><path d="M3 18h18M3 11V7a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
+    住宿
+  </button>
+  <button class="nav-btn" data-panel="panel-packing">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="7" width="16" height="13" rx="2"/><path d="M9 7V5a2 2 0 012-2h2a2 2 0 012 2v2M4 12h16"/></svg>
+    行李
+  </button>
+  <button class="nav-btn" data-panel="panel-shopping">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8h12l-1 12H7L6 8z"/><path d="M9 8V6a3 3 0 016 0v2"/></svg>
+    必買清單
+  </button>
+  <button class="nav-btn" data-panel="panel-calc">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 6h8M7 11h1M11.5 11h1M16 11h1M7 15h1M11.5 15h1M16 15h1M7 19h1M11.5 19h1"/></svg>
+    計算機
+  </button>
+  <button class="nav-btn" data-panel="panel-docs">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h6"/></svg>
+    文件
+  </button>
+</nav>
+
+<script>
+function mapUrl(q){return "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(q);}
+
+const days = [
+  {num:"01", kanji:"發", date:"12/25（五）", title:"台灣 → 東京", tags:["移動日"], items:[
+    {time:"06:00", name:"高雄機場集合", note:""},
+    {time:"08:00", name:"虎航 IT280 起飛", note:"高雄→成田，飛行約4.5小時"},
+    {time:"12:10", name:"抵達成田機場", note:"入境、領行李、辦網卡/WiFi分享器"},
+    {time:"13:30", name:"成田→東京市區", note:"成田特快N'EX或京成Skyliner，約60-90分，約¥3,000-4,000/人"},
+    {time:"15:00", name:"飯店check-in", note:"建議住東京車站／濱松町周邊，隔天要往高岡方向較順", map:"東京駅"},
+    {time:"16:30", name:"芝公園", note:"", map:"芝公園"},
+    {time:"17:00", name:"東京鐵塔", note:"夜景、聖誕燈飾", map:"東京タワー"},
+    {time:"18:30", name:"燒肉晚餐", note:"建議東京鐵塔／麻布十番周邊，可先預約4人桌"}
+  ], budget:"約 NT$1,800–2,200／人（不含機票）"},
+  {num:"02", kanji:"村", date:"12/26（六）", title:"東京 → 高岡 → 相倉合掌村", tags:["世界遺產","移動日"], items:[
+    {time:"07:30", name:"飯店退房，前往東京車站", note:""},
+    {time:"08:00", name:"北陸新幹線 東京→新高岡", note:"約2.5小時，指定席約¥13,500/人"},
+    {time:"10:30", name:"抵達新高岡站，寄放大行李", note:"站內置物櫃或宅配至下一晚住宿處"},
+    {time:"11:00", name:"午餐", note:"高岡車站周邊"},
+    {time:"12:30", name:"新高岡／高岡→相倉合掌村", note:"世界遺産バス（加越能巴士），約1小時，來回約¥3,000/人"},
+    {time:"13:30", name:"相倉合掌造聚落", note:"世界遺產，冬季雪景、展望台拍照，停留約2小時", map:"相倉合掌造り集落"},
+    {time:"16:00", name:"巴士返回高岡／新高岡", note:""},
+    {time:"17:00", name:"抵達富山，飯店check-in", note:"建議住富山車站周邊，方便隔天搭瑰麗山海號", map:"富山駅"},
+    {time:"18:30", name:"晚餐", note:"富山當地黑拉麵或白蝦料理"}
+  ], budget:"約 NT$4,000–4,500／人（含新幹線）"},
+  {num:"03", kanji:"海", date:"12/27（日）", title:"富山：瑰麗山海號＋市區", tags:["觀光列車","需預約"], items:[
+    {time:"08:30", name:"飯店出發，前往高岡站", note:"富山→高岡，JR北陸線約20分"},
+    {time:"09:30", name:"搭乘瑰麗山海號（べるもんた）冰見線", note:"高岡→冰見，全車指定席，車上壽司職人現握壽司，行經雨晴海岸會減速拍照，車票需出發前1個月預約", map:"べるもんた"},
+    {time:"11:00", name:"抵達冰見，短暫下車拍照／逛冰見番屋街", note:""},
+    {time:"12:00", name:"午餐", note:"冰見漁市場鮮魚"},
+    {time:"13:30", name:"冰見→高岡→富山", note:"JR冰見線+北陸線，約50分"},
+    {time:"15:00", name:"富岩運河環水公園", note:"星巴克富山環水公園店、天門橋", map:"富岩運河環水公園"},
+    {time:"16:30", name:"富山城址公園", note:"", map:"富山城址公園"},
+    {time:"18:00", name:"晚餐", note:"富山市區"}
+  ], warn:"瑰麗山海號全車指定席，請務必提前1個月上網或至JR綠色窗口預約，餐食需另3天前於VISIT富山県網站預約", budget:"約 NT$3,000–3,500／人"},
+  {num:"04", kanji:"泉", date:"12/28（一）", title:"富山 → 宇奈月溫泉", tags:["溫泉"], items:[
+    {time:"09:00", name:"飯店退房", note:""},
+    {time:"09:30", name:"富山→宇奈月溫泉", note:"富山地方鐵道本線，約1小時40分，單程約¥1,900/人"},
+    {time:"11:30", name:"抵達宇奈月溫泉，寄放行李", note:""},
+    {time:"12:00", name:"午餐", note:"溫泉街"},
+    {time:"13:00", name:"宇奈月溫泉街散步", note:"新山彦橋", map:"宇奈月温泉"},
+    {time:"14:00", name:"黑部川電氣紀念館", note:"免費參觀，冬季9:00-16:00開放", map:"黒部川電気記念館"},
+    {time:"15:30", name:"飯店check-in，泡湯放鬆", note:""},
+    {time:"18:30", name:"晚餐", note:"飯店內會席料理或溫泉街"}
+  ], budget:"約 NT$1,500–2,000／人（不含住宿）"},
+  {num:"05", kanji:"移", date:"12/29（二）", title:"宇奈月溫泉 → 河口湖", tags:["長途移動"], items:[
+    {time:"08:30", name:"溫泉飯店早餐、退房", note:""},
+    {time:"09:30", name:"宇奈月溫泉→富山", note:"富山地方鐵道，約1小時40分"},
+    {time:"11:30", name:"午餐", note:"富山車站簡單解決"},
+    {time:"12:30", name:"富山→東京", note:"北陸新幹線，約2小時10分"},
+    {time:"14:40", name:"東京→大月→河口湖", note:"中央線特急+富士急行線，或高速巴士直達，約2小時"},
+    {time:"17:00", name:"抵達河口湖，飯店check-in", note:"建議選有富士山view或溫泉的旅館", map:"河口湖駅"},
+    {time:"18:30", name:"晚餐", note:"當地「餺飥（ほうとう）」鍋物"}
+  ], warn:"這天是移動較長的一天（宇奈月→河口湖約7-8小時交通），建議提早出發、預留緩衝時間", budget:"約 NT$5,000–5,500／人"},
+  {num:"06", kanji:"雪", date:"12/30（三）", title:"河口湖：滑雪一整天", tags:["滑雪"], items:[
+    {time:"08:30", name:"飯店出發", note:""},
+    {time:"09:00", name:"富士天滑雪場 Fujiten Snow Resort", note:"接駁巴士或計程車約20-30分，適合初學者，可租借雪具、纜車眺望富士山", map:"ふじてんスノーリゾート"},
+    {time:"09:30–15:00", name:"滑雪體驗", note:"建議預約教練課程（4人可包班）"},
+    {time:"15:30", name:"返回河口湖，飯店休息、泡湯", note:""},
+    {time:"18:00", name:"晚餐", note:""}
+  ], budget:"約 NT$5,000–6,500／人（含滑雪租具課程）"},
+  {num:"07", kanji:"詣", date:"12/31（四）", title:"河口湖：跨年夜神社參拜", tags:["跨年"], items:[
+    {time:"10:00", name:"悠閒早晨、飯店周邊散步", note:""},
+    {time:"12:00", name:"河口湖大石公園", note:"富士山雪景地標", map:"大石公園"},
+    {time:"14:00", name:"河口湖湖畔散步／伴手禮採買", note:"", map:"河口湖"},
+    {time:"16:00", name:"飯店休息、溫泉", note:""},
+    {time:"18:00", name:"跨年晚餐", note:""},
+    {time:"22:30", name:"前往北口本宮冨士淺間神社", note:"富士吉田市，計程車或巴士約20-30分", map:"北口本宮冨士浅間神社"},
+    {time:"24:00", name:"跨年鐘聲／神社參拜", note:"現場可能人潮多，注意保暖"},
+    {time:"01:00", name:"返回飯店", note:""}
+  ], budget:"約 NT$2,000–2,500／人"},
+  {num:"08", kanji:"初", date:"01/01（五）", title:"河口湖元旦 → 晚上回東京", tags:["初詣","移動"], items:[
+    {time:"10:00", name:"飯店晚起、早午餐", note:"跨年熬夜後補眠"},
+    {time:"12:00", name:"河口湖美術館或湖畔景點", note:"依天候彈性安排", map:"河口湖美術館"},
+    {time:"14:00", name:"天上山公園纜車", note:"可眺望富士山與河口湖全景", map:"天上山公園"},
+    {time:"15:30", name:"溫泉／伴手禮採買", note:"河口湖車站周邊"},
+    {time:"17:00", name:"河口湖→大月→新宿／東京", note:"富士急行線+中央線特急，或高速巴士直達，約2小時"},
+    {time:"19:00", name:"抵達東京，飯店check-in", note:"建議選東京車站／上野／日暮里周邊，隔天去成田較方便", map:"上野駅"},
+    {time:"19:30", name:"晚餐", note:"東京市區"},
+    {time:"21:00", name:"整理行李早點休息", note:"準備隔天輕鬆出發"}
+  ], budget:"約 NT$3,000起／人（不含購物）"},
+  {num:"09", kanji:"歸", date:"01/02（六）", title:"東京 → 成田 → 台灣", tags:["返程"], items:[
+    {time:"09:00", name:"飯店退房", note:"不用摸黑早起，從容出發即可"},
+    {time:"09:30", name:"東京→成田機場", note:"成田特快N'EX或利木津巴士，約60-90分"},
+    {time:"11:00", name:"抵達機場，check-in、退稅", note:""},
+    {time:"13:30", name:"泰亞航 FD235 起飛", note:"成田→高雄，約4小時"},
+    {time:"17:00", name:"抵達高雄", note:"行程結束 ✈️"}
+  ], budget:"約 NT$3,000–4,000／人"}
+];
+
+const stays = [
+  {area:"東京", em:"東京", nights:"1晚（12/25）", note:"建議東京車站／濱松町周邊，方便隔天前往北陸方向"},
+  {area:"富山", em:"富山", nights:"1晚（12/26）", note:"建議富山車站周邊，方便隔天搭乘瑰麗山海號"},
+  {area:"宇奈月溫泉", em:"宇奈月", nights:"1晚（12/28）", note:"建議選有露天溫泉的旅館"},
+  {area:"河口湖", em:"河口湖", nights:"3晚（12/29-1/1）", note:"建議選有富士山view或溫泉的旅館"},
+  {area:"東京", em:"東京", nights:"1晚（1/1）", note:"建議東京車站／上野／日暮里周邊，方便隔天前往成田機場"}
+];
+
+const daysList = document.getElementById('days-list');
+days.forEach((d, idx) => {
+  const card = document.createElement('div');
+  card.className = 'day-card';
+  const tagsHtml = d.tags.map(t => `<span class="tag${t==='移動日'||t==='長途移動'||t==='移動'?' warn':''}">${t}</span>`).join('');
+  const itemsHtml = d.items.map(it => `
+    <li class="t-item">
+      <div class="t-time">${it.time}</div>
+      <div class="t-main">
+        <div class="t-name">${it.name}</div>
+        ${it.note ? `<div class="t-note">${it.note}</div>` : ''}
+        ${it.map ? `<a class="map-btn" href="${mapUrl(it.map)}" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-6.5-7-11a7 7 0 1114 0c0 4.5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
+          導航
+        </a>` : ''}
+      </div>
+    </li>`).join('');
+  card.innerHTML = `
+    <div class="day-head" data-idx="${idx}">
+      <div class="hanko"><span class="num">${d.num}</span><span class="kanji">${d.kanji}</span></div>
+      <div class="day-head-text">
+        <div class="date">${d.date}</div>
+        <div class="title brand">${d.title}</div>
+      </div>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+    <div class="day-body">
+      <div class="day-body-inner">
+        <div class="day-tags">${tagsHtml}</div>
+        <ul class="timeline">${itemsHtml}</ul>
+        ${d.warn ? `<div class="callout">⚠️ ${d.warn}</div>` : ''}
+        <div class="day-budget"><span>當日預估花費</span><b>${d.budget}</b></div>
+      </div>
+    </div>`;
+  daysList.appendChild(card);
+});
+daysList.addEventListener('click', (e) => {
+  const head = e.target.closest('.day-head');
+  if (!head) return;
+  const body = head.nextElementSibling;
+  const isOpen = head.classList.contains('open');
+  daysList.querySelectorAll('.day-head.open').forEach(h => {
+    h.classList.remove('open');
+    h.nextElementSibling.style.maxHeight = null;
+  });
+  if (!isOpen) {
+    head.classList.add('open');
+    body.style.maxHeight = body.scrollHeight + 'px';
+  }
+});
+daysList.querySelector('.day-head').click();
+
+document.getElementById('stay-list').innerHTML = stays.map(s => `
+  <div class="stay-card">
+    <div class="stay-emblem">${s.em.slice(0,2)}</div>
+    <div class="stay-text">
+      <div class="area brand">${s.area}</div>
+      <div class="nights">${s.nights}</div>
+      <div class="note">${s.note}</div>
+    </div>
+  </div>`).join('');
+
+function makeEditableList({ listId, inputId, addBtnId, progressFillId, progressTextId, initialItems }) {
+  let items = initialItems.map((label, i) => ({ id: 'i' + i + '-' + Date.now() + Math.random().toString(36).slice(2,5), label, checked: false }));
+  const listEl = document.getElementById(listId);
+  const fillEl = document.getElementById(progressFillId);
+  const textEl = document.getElementById(progressTextId);
+
+  function render() {
+    if (items.length === 0) {
+      listEl.innerHTML = '<div class="empty-hint">目前清單是空的，新增第一項吧！</div>';
+    } else {
+      listEl.innerHTML = items.map(it => `
+        <div class="pack-item ${it.checked ? 'checked' : ''}" data-id="${it.id}">
+          <div class="checkbox" data-action="toggle">
+            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"><path d="M5 13l4 4L19 7"/></svg>
+          </div>
+          <span class="label" data-action="toggle">${it.label}</span>
+          <button class="del-btn" data-action="delete" aria-label="刪除">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+          </button>
+        </div>`).join('');
+    }
+    const checkedCount = items.filter(i => i.checked).length;
+    textEl.textContent = `${checkedCount}/${items.length}`;
+    fillEl.style.width = (items.length ? (checkedCount / items.length * 100) : 0) + '%';
+  }
+
+  listEl.addEventListener('click', (e) => {
+    const row = e.target.closest('.pack-item');
+    if (!row) return;
+    const id = row.dataset.id;
+    const action = e.target.closest('[data-action]')?.dataset.action;
+    if (action === 'delete') {
+      items = items.filter(i => i.id !== id);
+    } else {
+      const it = items.find(i => i.id === id);
+      if (it) it.checked = !it.checked;
+    }
+    render();
+  });
+
+  const inputEl = document.getElementById(inputId);
+  function addItem() {
+    const val = inputEl.value.trim();
+    if (!val) return;
+    items.push({ id: 'i' + Date.now() + Math.random().toString(36).slice(2,5), label: val, checked: false });
+    inputEl.value = '';
+    render();
+  }
+  document.getElementById(addBtnId).addEventListener('click', addItem);
+  inputEl.addEventListener('keydown', (e) => { if (e.key === 'Enter') addItem(); });
+
+  render();
+}
+
+makeEditableList({
+  listId:'packing-list', inputId:'packingInput', addBtnId:'packingAdd',
+  progressFillId:'progressFill', progressTextId:'progressText',
+  initialItems:[
+    "護照（效期6個月以上）","機票、住宿訂單","海外旅平險保單","日幣現金＋信用卡","網卡或WiFi分享器",
+    "瑰麗山海號車票（提前1個月預約）","防風防水外套","發熱衣、厚襪","滑雪手套","保暖帽、圍巾",
+    "防滑雪靴","個人藥品","行動電源、轉接頭","暖暖包","拖車行李箱"
+  ]
+});
+
+makeEditableList({
+  listId:'shopping-list', inputId:'shoppingInput', addBtnId:'shoppingAdd',
+  progressFillId:'shopProgressFill', progressTextId:'shopProgressText',
+  initialItems:[
+    "富山白蝦仙貝","冰見鮮魚伴手禮","宇奈月溫泉入浴劑","野澤菜漬物","河口湖富士山周邊小物",
+    "驅寒暖暖包（日本藥妝限定款）","唐吉訶德藥妝"
+  ]
+});
+
+const jpyInput = document.getElementById('jpyInput');
+const twdInput = document.getElementById('twdInput');
+const rateInput = document.getElementById('rateInput');
+let lastEdited = 'jpy';
+function recalc() {
+  const rate = parseFloat(rateInput.value) || 0;
+  if (lastEdited === 'jpy') {
+    const jpy = parseFloat(jpyInput.value);
+    twdInput.value = isNaN(jpy) ? '' : Math.round(jpy * rate * 100) / 100;
+  } else {
+    const twd = parseFloat(twdInput.value);
+    jpyInput.value = (isNaN(twd) || rate === 0) ? '' : Math.round(twd / rate * 100) / 100;
+  }
+}
+jpyInput.addEventListener('input', () => { lastEdited = 'jpy'; recalc(); });
+twdInput.addEventListener('input', () => { lastEdited = 'twd'; recalc(); });
+rateInput.addEventListener('input', recalc);
+document.getElementById('swapBtn').addEventListener('click', () => {
+  lastEdited = lastEdited === 'jpy' ? 'twd' : 'jpy';
+  recalc();
+});
+const quickWrap = document.getElementById('quickAmounts');
+[1000, 5000, 10000, 30000, 50000].forEach(v => {
+  const chip = document.createElement('button');
+  chip.className = 'quick-chip';
+  chip.type = 'button';
+  chip.textContent = `¥${v.toLocaleString()}`;
+  chip.addEventListener('click', () => { jpyInput.value = v; lastEdited = 'jpy'; recalc(); });
+  quickWrap.appendChild(chip);
+});
+jpyInput.value = 10000;
+recalc();
+
+const navButtons = document.querySelectorAll('.nav-btn');
+navButtons.forEach(btn => {
+  btn.addEventListener('click', () => {
+    navButtons.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.getElementById(btn.dataset.panel).classList.add('active');
+    window.scrollTo({top:0, behavior:'instant'});
+  });
+});
+
+const canvas = document.getElementById('snow');
+const ctx = canvas.getContext('2d');
+function resizeCanvas(){ canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; }
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+const flakes = Array.from({length:40}, () => ({
+  x: Math.random()*300, y: Math.random()*200, r: Math.random()*1.6+0.6,
+  s: Math.random()*0.5+0.15, drift: Math.random()*0.4-0.2
+}));
+function drawSnow(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle = 'rgba(255,255,255,0.85)';
+  flakes.forEach(f => {
+    f.y += f.s; f.x += f.drift;
+    if (f.y > canvas.height) { f.y = -4; f.x = Math.random()*canvas.width; }
+    if (f.x > canvas.width) f.x = 0;
+    if (f.x < 0) f.x = canvas.width;
+    ctx.beginPath(); ctx.arc(f.x, f.y, f.r, 0, Math.PI*2); ctx.fill();
+  });
+  requestAnimationFrame(drawSnow);
+}
+drawSnow();
+</script>
+</body>
+</html>
